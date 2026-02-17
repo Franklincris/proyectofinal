@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cotizador de Seguros TK-U</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            margin: auto;
+            box-shadow: 0px 0px 10px gray;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .resultado {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Cotizador de Seguros TK-U</h2>
+
+    <label>Nombre:</label>
+    <input type="text" id="nombre">
+
+    <label>Edad del asegurado:</label>
+    <input type="number" id="edad">
+
+    <label>¿Está casado?</label>
+    <select id="casado">
+        <option value="no">No</option>
+        <option value="si">Sí</option>
+    </select>
+
+    <div id="conyugeDiv" style="display:none;">
+        <label>Edad del cónyuge:</label>
+        <input type="number" id="edadConyuge">
+    </div>
+
+    <label>¿Tiene hijos?</label>
+    <select id="hijos">
+        <option value="no">No</option>
+        <option value="si">Sí</option>
+    </select>
+
+    <div id="cantidadHijosDiv" style="display:none;">
+        <label>Cantidad de hijos:</label>
+        <input type="number" id="cantidadHijos">
+    </div>
+
+    <button onclick="calcularCotizacion()">Calcular Cotización</button>
+
+    <div class="resultado" id="resultado"></div>
+</div>
+
+<script>
+
+    const precioBase = 2000;
+
+    document.getElementById("casado").addEventListener("change", function() {
+        document.getElementById("conyugeDiv").style.display =
+            this.value === "si" ? "block" : "none";
+    });
+
+    document.getElementById("hijos").addEventListener("change", function() {
+        document.getElementById("cantidadHijosDiv").style.display =
+            this.value === "si" ? "block" : "none";
+    });
+
+    function calcularCotizacion() {
+
+        let nombre = document.getElementById("nombre").value;
+        let edad = parseInt(document.getElementById("edad").value);
+        let casado = document.getElementById("casado").value;
+        let hijos = document.getElementById("hijos").value;
+
+        let total = precioBase;
+        let recargo = 0;
+
+        if (edad < 18) {
+            document.getElementById("resultado").innerHTML =
+                "No se puede asegurar a menores de edad.";
+            return;
+        }
+
+        // Recargo por edad del asegurado
+        if (edad >= 18 && edad <= 24) {
+            recargo += precioBase * 0.10;
+        } else if (edad >= 25 && edad <= 49) {
+            recargo += precioBase * 0.20;
+        } else if (edad >= 50) {
+            recargo += precioBase * 0.30;
+        }
+
+        // Recargo por cónyuge
+        if (casado === "si") {
+            let edadConyuge = parseInt(document.getElementById("edadConyuge").value);
+
+            if (edadConyuge >= 18 && edadConyuge <= 24) {
+                recargo += precioBase * 0.10;
+            } else if (edadConyuge >= 25 && edadConyuge <= 49) {
+                recargo += precioBase * 0.20;
+            } else if (edadConyuge >= 50) {
+                recargo += precioBase * 0.30;
+            }
+        }
+
+        // Recargo por hijos
+        if (hijos === "si") {
+            let cantidadHijos = parseInt(document.getElementById("cantidadHijos").value);
+            recargo += cantidadHijos * (precioBase * 0.20);
+        }
+
+        total += recargo;
+
+        document.getElementById("resultado").innerHTML =
+            "Estimado/a " + nombre + ", el total de su cotización es: Q." + total.toFixed(2);
+    }
+
+</script>
+
+</body>
+</html>
